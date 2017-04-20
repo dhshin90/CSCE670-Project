@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Different Faces of a City</title>
+    <style>
+      #map {
+        height: 100%;
+      }
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCseqo9TIbb7QnuEVeGFC6uV_qkSFVK4Ig"></script>
+	<script type="text/javascript" src="coords_list.json"></script>
+
+	<script>
+		var index = 0;
+		var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		var colors = ["FF0000", "00FF00", "0000FF"];
+
+		var houston_center = {lat: 29.762778, lng: -95.383056};
+
+		var austin_center = {lat: 30.266667, lng: -97.733333};
+
+		var filename = "/coords_list.json";
+
+		function loadJSON(file, callback) {   
+
+			var xobj = new XMLHttpRequest();
+			xobj.overrideMimeType("application/json");
+			xobj.open('GET', file, true); 
+			xobj.onreadystatechange = function () {
+				  if (xobj.readyState == 4 && xobj.status == "200") {
+				    callback(xobj.responseText);
+				  }
+			};
+			xobj.send(null);  
+ 		}
+ 	
+
+		function load() {
+		
+			loadJSON("coords_list.json", function(response) {
+		  
+				var list = JSON.parse(response);
+				initialize(list);
+			});
+		}
+
+		function initialize(list) {
+			var map = new google.maps.Map(document.getElementById('map'), {
+				zoom: 12,
+				center: austin_center
+			});
+
+			addMarker(austin_center, map);
+
+			for(var i = 0; i < list.length; i++)
+			{
+				for(var j = 0; j < list[i].length; j++)
+				{
+					list[i][j].lat = parseFloat(list[i][j].lat);
+					list[i][j].lng = parseFloat(list[i][j].lng);
+
+					addMarker(list[i][j], map);
+				}
+				index++;
+			}
+			
+		}
+
+		function addMarker(location, map) {
+			var label = labels[index % labels.length]
+			var color = colors[index % colors.length]
+
+			var pin = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld="+label+"|"+color);
+			var marker = new google.maps.Marker({
+				position: location,
+				icon: pin,
+				map: map
+			});
+		}
+
+		load();
+
+	</script>
+
+  </head>
+  <body>
+    <div id="map"></div>
+  </body>
+</html>
