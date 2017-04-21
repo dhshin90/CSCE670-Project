@@ -18,9 +18,11 @@
 	<script type="text/javascript" src="coords_list.json"></script>
 
 	<script>
+		//Skeleton code from Google's example
+
 		var index = 0;
 		var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-		var colors = ["FF0000", "00FF00", "0000FF"];
+		var colors = [];
 
 		var houston_center = {lat: 29.762778, lng: -95.383056};
 
@@ -56,7 +58,9 @@
 				zoom: 12,
 				center: houston_center
 			});
-			//alert(JSON.stringify(austin_center));
+
+			randomColors(list.length);
+
 			addMarker(houston_center, map);
 			for(var i = 0; i < list.length; i++)
 			{
@@ -65,12 +69,11 @@
 					var latitude = parseFloat(list[i][j].latitude);
 					var longitude = parseFloat(list[i][j].longitude);
 					var marker = {lat: parseFloat(latitude), lng: parseFloat(longitude)}
-					//alert(JSON.stringify(marker));
+
 					addMarker(marker, map);
-					//if(j == 3) break;
 				}
-				//if(i == 3) break;
-				index++;
+
+				index++
 			}
 			
 		}
@@ -85,6 +88,88 @@
 				icon: pin,
 				map: map
 			});
+		}
+
+		// Modified from http://snipplr.com/view/14590/hsv-to-rgb/
+		function hsvToRgb(h, s, v) {
+			var r, g, b;
+			var i;
+			var f, p, q, t;
+		 
+			// Make sure our arguments stay in-range
+			h = Math.max(0, Math.min(360, h));
+			s = Math.max(0, Math.min(100, s));
+			v = Math.max(0, Math.min(100, v));
+		 
+			// We accept saturation and value arguments from 0 to 100 because that's
+			// how Photoshop represents those values. Internally, however, the
+			// saturation and value are calculated from a range of 0 to 1. We make
+			// That conversion here.
+			s /= 100;
+			v /= 100;
+		 
+			if(s == 0) {
+				// Achromatic (grey)
+				r = g = b = v;
+				return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+			}
+		 
+			h /= 60; // sector 0 to 5
+			i = Math.floor(h);
+			f = h - i; // factorial part of h
+			p = v * (1 - s);
+			q = v * (1 - s * f);
+			t = v * (1 - s * (1 - f));
+		 
+			switch(i) {
+				case 0:
+					r = v;
+					g = t;
+					b = p;
+					break;
+		 
+				case 1:
+					r = q;
+					g = v;
+					b = p;
+					break;
+		 
+				case 2:
+					r = p;
+					g = v;
+					b = t;
+					break;
+		 
+				case 3:
+					r = p;
+					g = q;
+					b = v;
+					break;
+		 
+				case 4:
+					r = t;
+					g = p;
+					b = v;
+					break;
+		 
+				default: // case 5:
+					r = v;
+					g = p;
+					b = q;
+			}
+		 
+			return ("00"+Math.round(r * 255).toString(16)).toUpperCase().substr(-2)+("00"+Math.round(g * 255).toString(16)).toUpperCase().substr(-2)+("00"+Math.round(b * 255).toString(16)).toUpperCase().substr(-2);
+			// Output: string of 6 letters ( first 2 digits: red, second 2 digits: green, the other 2 digits: blue)
+		}
+
+		function randomColors(total)
+		{
+			var i = 360 / (total - 1); // # of clusters 
+
+			for (var x=0; x<total; x++)
+			{
+				colors.push(hsvToRgb(i * x, 100, 100)); 
+			}
 		}
 
 		load();
