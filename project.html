@@ -45,7 +45,7 @@
 		function load() {
 		
 			loadJSON("coords_list.json", function(response) {
-		  
+
 				var list = JSON.parse(response);
 				initialize(list);
 			});
@@ -54,20 +54,22 @@
 		function initialize(list) {
 			var map = new google.maps.Map(document.getElementById('map'), {
 				zoom: 12,
-				center: austin_center
+				center: houston_center
 			});
-
-			addMarker(austin_center, map);
-
+			//alert(JSON.stringify(austin_center));
+			addMarker(houston_center, map);
 			for(var i = 0; i < list.length; i++)
 			{
 				for(var j = 0; j < list[i].length; j++)
 				{
-					list[i][j].lat = parseFloat(list[i][j].lat);
-					list[i][j].lng = parseFloat(list[i][j].lng);
-
-					addMarker(list[i][j], map);
+					var latitude = parseFloat(list[i][j].latitude);
+					var longitude = parseFloat(list[i][j].longitude);
+					var marker = {lat: parseFloat(latitude), lng: parseFloat(longitude)}
+					//alert(JSON.stringify(marker));
+					addMarker(marker, map);
+					//if(j == 3) break;
 				}
+				//if(i == 3) break;
 				index++;
 			}
 			
